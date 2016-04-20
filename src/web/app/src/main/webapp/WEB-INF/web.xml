@@ -240,6 +240,15 @@
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>DownloadRawServlet</servlet-name>
+        <servlet-class>org.geoserver.web.demo.DownloadRawServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DownloadRawServlet</servlet-name>
+        <url-pattern>/dnldraw</url-pattern>
+    </servlet-mapping>
+    
     <mime-mapping>
       <extension>xsl</extension>
       <mime-type>text/xml</mime-type>

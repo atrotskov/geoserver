@@ -315,6 +315,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     
     @Override
     public GeoServerSession getSession() {
+    	GeoServerSession r = (GeoServerSession)super.getSession();
         return (GeoServerSession) super.getSession();
     }
 

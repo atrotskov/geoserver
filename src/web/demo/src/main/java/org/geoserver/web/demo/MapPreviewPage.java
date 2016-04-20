@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -33,7 +34,10 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
@@ -53,6 +57,10 @@ import org.geoserver.wms.GetMapOutputFormat;
 public class MapPreviewPage extends GeoServerBasePage {
 
 	private static final long serialVersionUID = 1L;
+	
+	static String appKey = GeoServerApplication.get().getApplicationKey();
+	
+	static List<PreviewLayer> listOfLayer = new ArrayList<>();
 
 	PreviewLayerProvider provider = new PreviewLayerProvider();
 
@@ -77,13 +85,19 @@ public class MapPreviewPage extends GeoServerBasePage {
 			@Override
             protected Component getComponentForProperty(String id, IModel<PreviewLayer> itemModel, Property<PreviewLayer> property) {
                 PreviewLayer layer = itemModel.getObject();
+                
+                /*--------------- atroskov START -------------------*/
+                ResourceInfo resourceInfo = layer.layerInfo.getResource();
+                String csId = resourceInfo.getStore().getId();							// получаю ковердеж стор айди
+                                               
+                /*--------------- atroskov END ---------------------*/
 
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", MapPreviewPage.this);
                     f.add(new Image("layerIcon", layer.getIcon()));
                     return f;
-                } else if (property == NAME) {
-                    return new Label(id, property.getModel(itemModel));
+                } else if (property == NAME) {   	
+                	return new Label(id, property.getModel(itemModel));
                 } else if (property == TITLE) {
                     return new Label(id, property.getModel(itemModel));
                 } else if (property == COMMON) {
@@ -99,6 +113,16 @@ public class MapPreviewPage extends GeoServerBasePage {
                     Component gmlLink = new ExternalLink("gml", gmlUrl, "GML");
                     f.add(gmlLink);
                     gmlLink.setVisible(layer.getType() == PreviewLayerType.Vector);
+                    
+                    
+                    //atroskov START
+                    //RAW previw (we want to get direct link for source file downloading)
+                    final String MAP_VAL = "dnldraw";
+                    final String ATTR = "csId";
+                    final String rawUrl = layer.getBaseUrl() + MAP_VAL + "?" + ATTR + "=" + csId + "&ak=" + appKey;
+                    f.add(new ExternalLink("raw", rawUrl, "RAW"));
+                    //atroskov END
+                    
                     
                     return f;
                 } else if (property == ALL) {

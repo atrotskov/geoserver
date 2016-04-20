@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -208,6 +209,14 @@ public class PreviewLayer {
             return ResponseUtils.buildURL(base, ws + "/" + service, null, URLType.SERVICE);
         }
     }
+    
+    // atroskov START
+    String getBaseUrl() {
+    	HttpServletRequest req = GeoServerApplication.get().servletRequest();
+    	Set<String> qqq = req.getServletContext().getResourcePaths("/");
+        return ResponseUtils.baseURL(req);
+    }
+    // atroskov END
 
     /**
      * Given a request and a target format, builds the WMS request
